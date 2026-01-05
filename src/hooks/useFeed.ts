@@ -13,7 +13,7 @@ export const useFeeds = (page: number = 1, limit: number = 10) => {
   return useQuery<PaginatedResponse<Feed>>({
     queryKey: ['feeds', page, limit],
     queryFn: () => feedAPI.getFeeds(page, limit),
-    placeholderData: keepPreviousData, // 🔥 pagination smooth
+    placeholderData: keepPreviousData,
   });
 };
 
@@ -30,7 +30,7 @@ export const useCreateFeed = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['feeds'],
-        exact: false, // ✅ IMPORTANT
+        exact: false, 
       });
     },
   });
@@ -48,7 +48,7 @@ export const useUpdateFeed = () => {
 
       queryClient.invalidateQueries({
         queryKey: ['feeds'],
-        exact: false, // ✅ IMPORTANT
+        exact: false, 
       });
     },
   });
@@ -63,7 +63,7 @@ export const useDeleteFeed = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['feeds'],
-        exact: false, // ✅ IMPORTANT
+        exact: false, 
       });
     },
   });

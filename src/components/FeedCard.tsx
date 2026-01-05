@@ -43,7 +43,6 @@ export const FeedCard: React.FC<{ feed: Feed; onDelete?: () => void }> = ({ feed
   const handleDelete = () => {
     if (!confirm('Are you sure you want to delete this post?')) return;
 
-    // Optimistically remove from local cache for instant feedback
     queryClient.setQueryData(['feeds', 1, 10], (old: any) => {
       if (!old) return old;
       return {
@@ -58,16 +57,13 @@ export const FeedCard: React.FC<{ feed: Feed; onDelete?: () => void }> = ({ feed
 
     deleteFeed(feed.id, {
       onSuccess: () => {
-        // Also invalidate to ensure backend sync
         queryClient.invalidateQueries({
           queryKey: ['feeds'],
           exact: false,
         });
-        // Trigger parent component refresh
         onDelete?.();
       },
       onError: () => {
-        // Revert cache if delete failed
         queryClient.invalidateQueries({
           queryKey: ['feeds', 1, 10],
         });

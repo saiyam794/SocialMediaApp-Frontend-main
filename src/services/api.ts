@@ -13,12 +13,10 @@ const api: AxiosInstance = axios.create({
   },
 });
 
-// Add ngrok bypass header if using ngrok
 if (/ngrok(?:-free)?\.(?:app|io|dev)/i.test(API_URL) || /ngrok(?:-free)?\.(?:app|io|dev)/i.test(BACKEND_URL)) {
   api.defaults.headers.common['ngrok-skip-browser-warning'] = 'true';
 }
 
-// Add auth token to requests if available
 api.interceptors.request.use((config) => {
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
@@ -26,7 +24,6 @@ api.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${token}`;
   }
   
-  // Ensure ngrok header is always present for ngrok URLs
   if (config.url && (/ngrok(?:-free)?\.(?:app|io|dev)/i.test(config.url) || 
       /ngrok(?:-free)?\.(?:app|io|dev)/i.test(config.baseURL || ''))) {
     config.headers['ngrok-skip-browser-warning'] = 'true';
@@ -34,32 +31,17 @@ api.interceptors.request.use((config) => {
   
   return config;
 });
-
-/**
- * Feed API calls
- */
 export const feedAPI = {
-  /**
-   * Get all feeds with pagination
-   */
   getFeeds: async (page: number = 1, limit: number = 10) => {
     const response = await api.get<PaginatedResponse<Feed>>("/feeds", {
       params: { page, limit },
     });
     return response.data;
   },
-
-  /**
-   * Get single feed by ID
-   */
   getFeed: async (id: string) => {
     const response = await api.get<Feed>(`/feeds/${id}`);
     return response.data;
   },
-
-  /**
-   * Create new feed
-   */
   createFeed: async (data: {
     content: string;
     images?: string[];
@@ -68,10 +50,6 @@ export const feedAPI = {
     const response = await api.post<Feed>("/feeds", data);
     return response.data;
   },
-
-  /**
-   * Update feed
-   */
   updateFeed: async (
     id: string,
     data: Partial<{ content: string; images: string[] }>
@@ -79,23 +57,12 @@ export const feedAPI = {
     const response = await api.put<Feed>(`/feeds/${id}`, data);
     return response.data;
   },
-
-  /**
-   * Delete feed
-   */
   deleteFeed: async (id: string) => {
     const response = await api.delete(`/feeds/${id}`);
     return response.data;
   },
 };
-
-/**
- * Comment API calls
- */
 export const commentAPI = {
-  /**
-   * Get comments for a feed
-   */
   getComments: async (feedId: string, page: number = 1, limit: number = 20) => {
     const response = await api.get<PaginatedResponse<Comment>>(
       `/comments/feed/${feedId}`,
@@ -105,45 +72,27 @@ export const commentAPI = {
     );
     return response.data;
   },
-
-  /**
-   * Create comment on a feed
-   */
   createComment: async (feedId: string, content: string) => {
     const response = await api.post<Comment>(`/comments/feed/${feedId}`, {
       content,
     });
     return response.data;
   },
-
-  /**
-   * Update comment
-   */
   updateComment: async (id: string, content: string) => {
     const response = await api.put<Comment>(`/comments/${id}`, { content });
     return response.data;
   },
-
-  /**
-   * Delete comment
-   */
   deleteComment: async (id: string) => {
     const response = await api.delete(`/comments/${id}`);
     return response.data;
   },
 };
-
-/**
- * Report API calls
- */
 export const reportAPI = {
   reportFeed: async (feedId: string, reason?: string) => {
     try {
-      console.log("📡 API: Reporting feed", feedId, reason);
       const response = await api.post(`/reports/feed/${feedId}`, {
         reason: reason || "Other",
       });
-      console.log("📡 API: Report response", response.data);
       alert("Feed reported successfully!");
       return response.data;
     } catch (error: any) {
@@ -174,14 +123,8 @@ export const reportAPI = {
     return response.data;
   },
 };
-
-/**
- * Upload API calls
- */
 export const uploadAPI = {
-  /**
-   * Upload single image
-   */
+
   uploadImage: async (file: File) => {
     const formData = new FormData();
     formData.append("image", file);
@@ -190,7 +133,6 @@ export const uploadAPI = {
       const response = await api.post("/upload/image", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      // Return full URL to backend
       return {
         ...response.data,
         url: response.data.url.startsWith("http")
@@ -202,10 +144,6 @@ export const uploadAPI = {
       throw error;
     }
   },
-
-  /**
-   * Upload multiple images
-   */
   uploadImages: async (files: File[]) => {
     const formData = new FormData();
     files.forEach((file) => formData.append("images", file));
@@ -214,7 +152,6 @@ export const uploadAPI = {
       const response = await api.post("/upload/images", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      // Convert all URLs to full backend URLs
       return {
         ...response.data,
         urls: (response.data.urls || []).map((url: string) =>
@@ -226,10 +163,6 @@ export const uploadAPI = {
       throw error;
     }
   },
-
-  /**
-   * Crop and upload image
-   */
   cropImage: async (
     file: File,
     cropData: { x: number; y: number; width: number; height: number }
@@ -245,7 +178,6 @@ export const uploadAPI = {
       const response = await api.post("/upload/crop", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      // Return full URL to backend
       return {
         ...response.data,
         url: response.data.url.startsWith("http")

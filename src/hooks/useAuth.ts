@@ -14,7 +14,7 @@ export const useAuth = () => {
       setUser(JSON.parse(storedUser));
     } catch (err) {
       console.error('Failed to parse stored user:', err);
-      setUser(null); // fallback if JSON is invalid
+      setUser(null); 
     }
   }
 

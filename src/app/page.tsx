@@ -30,7 +30,6 @@ export default function HomePage() {
   const handleFeedDeleted = () => {
     setPage(1);
     setShouldReset(true);
-    // Reset shouldReset after a short delay to allow the effect to run
     setTimeout(() => setShouldReset(false), 100);
   };
 
