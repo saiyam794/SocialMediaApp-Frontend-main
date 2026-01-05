@@ -4,8 +4,8 @@ import '../styles/globals.css';
 import { RootLayoutClient } from './layout-client';
 
 export const metadata: Metadata = {
-  title: 'faceboooook',
-  description: 'Facebook-like social feed with image support',
+  title: 'Instagram',
+  description: 'Instagram-like social feed with image support',
 };
 
 export default function RootLayout({
